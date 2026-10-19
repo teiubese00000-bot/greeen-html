@@ -178,6 +178,7 @@ nav {
     gap: 8px;
 }
 
+/*버튼 중에 submit만 위드 100px */
 button[type="submit"] {
     width: 100px;
 }
