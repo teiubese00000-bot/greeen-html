@@ -31,7 +31,7 @@ document
 
     // 현재 페이지에 해당하는 게시글이 없거나 255자를 넘는경우 예외처리
     if (!post || !content || content.length > 255) {
-      document.querySelector("#comment-massege").textContent =
+      document.querySelector("#comment-message").textContent =
         "댓글은 1~ 255자 이내로 입력하시오";
       return;
     }
