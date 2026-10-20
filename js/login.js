@@ -1,39 +1,31 @@
 async function login(event) {
-  event.preventDefault();
-  const form = event.currentTarget;
+    event.preventDefault();
+    const form = event.currentTarget;
+    // const form = document.querySelector("#login-form");
+    
+    // 로그인 과정에서 문제 발생 시 안내 문구 출력용
+    const message = document.querySelector("#login-message");
 
-  // 로그인 과정에 문제발생시 안내문구 출력
-  const message = document.querySelector("#login-message");
+    const username = form.elements.username.value.trim();
+    const password = form.elements.password.value;
 
-  const username = form.elements.username.value.trim();
-  const password = form.elements.password.value;
+    try {
+        
+        const tokens = await apiRequest("/user/login", "POST",{username, password});
 
- 
- try{
- 
- // 스프링 서버로 로그인 요청 
-  const response = await fetch("http://127.0.0.1:8080/api/user/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, password }),
-  });
+     
 
-const result = await response.json();
+        // 로그인은 성공했으나 응답에 토큰이 없는 경우
+        if (!tokens?.accessToken) {
+            throw new Error("액세스 토큰이 없습니다.");
+        }
 
-if (!response.ok || !response.success){
-throw new Error(result.message || "로그인 실패");
-
+        // 로컬스토리지에 액세스 토큰 저장
+        localStorage.setItem("accessToken", tokens.accessToken);
+        location.href = "index.html";
+    } catch (error) {
+        message.textContent = error.message;
+    }
 }
-// 로그인은 성공했으나 응답에 토큰이 없을때
- if(!result.data.accessToken){
-    throw new Error("액세스 토큰이 없음");
 
- }
-
-//  로컬스토리지에 액세스 토큰 저장
- localStorage.setItem("accessToken", result.data.accessToken);
- }catch(error){
-  message.textContent = error.message;
- }
-}
 document.querySelector("#login-form").addEventListener("submit", login);
