@@ -17,6 +17,15 @@ function requireLogin() {
 document.querySelector(".logout-button").addEventListener("click", logout)
 
 async function logout() {
+    const button=document.querySelector(".logout-button");
+
+    if(button.disabled){
+        return;
+
+    }
+
+    button.disabled=true;
+
     try {
         const accessToken = localStorage.getItem("accessToken");
 
@@ -46,8 +55,9 @@ async function logout() {
         // #nav-message.textContent -> alert로 대체
         alert(error.message);
 
-
-
+    }
+    finally{
+        button.disabled=false;
     }
 }
 

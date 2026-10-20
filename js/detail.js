@@ -3,8 +3,22 @@ const postId = Number(params.get("id"));
 
 // posts 배열에서 사용자가 누른 게시글 찾기
 async function loadPost() {
+    const message=document.querySelector("#post-message");
+    message.textContent= "게시글 불러오는중...";
+    const reloadButton= document.querySelector("#retry-post");
+    reloadButton.hidden = true;
+
+
     try {
-        // // 게시글 상세 조회 API 호출
+        //게시글 상세조회 API
+        const post = await apiRequest(`/board/${postId}`);
+        renderPost(post);
+            //  document.querySelector("#post-message").textContent = "";
+        message.textContent= "";
+        return true;
+
+
+          // // 게시글 상세 조회 API 호출
         // const response = await ap(`http://127.0.0.1:8080/api/board/${postId}`,
         //     { headers: getAuthHeaders()}
         // );
@@ -14,15 +28,16 @@ async function loadPost() {
         //     throw new Error(result.message || "게시글 조회 실패");
         // }
 
-        const post = await apiRequest(`/board/${postId}`);
-        renderPost(post);
-        document.querySelector("#post-message").textContent = "";
-        return true;
 
     } catch (error) {
         document.querySelector("#post-title").textContent = "게시글 조회 실패";
         document.querySelector("#post-content").textContent = "";
-        document.querySelector("#post-message").textContent = error.message;
+    
+        message.textContent=error.message;
+         //document.querySelector("#post-message").textContent = error.message;
+
+        document.querySelector("#retry-post").hidden = false;
+
         return false;
     }
 }
@@ -74,8 +89,18 @@ if (requireLogin()) {
     }
 }
 
+    document.querySelector("#retry-post").addEventListener("click", () =>{
+        // 재로드 방법 1. 게시글 불러오는 함수 재호출
+        loadPost();
+
+        // 재로드방법  2. 페이지 새로고침
+        // location.reload();
+
+    })
 // 댓글 작성 폼 submit 시 댓글 추가
 document.querySelector("#comment-form").addEventListener("submit", async function (event) {
+
+
     event.preventDefault();
     const input =document.querySelector("#comment-content");
     //const content = document.querySelector("#comment-content").value.trim();
@@ -103,7 +128,6 @@ document.querySelector("#comment-form").addEventListener("submit", async functio
         message.textContent = error.message;
 
     }
-
 
     // comments.push({
     //     id: getCommentNextId(),
